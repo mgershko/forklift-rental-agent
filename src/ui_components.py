@@ -3,9 +3,6 @@ import os
 import base64
 from pathlib import Path
 
-# Import from the same directory
-from .pdf_generator import PDFGenerator
-
 class UIComponents:
     """
     Reusable UI components for the Streamlit interface
@@ -98,28 +95,22 @@ class UIComponents:
         return None
     
     @staticmethod
-    def create_download_link(file_path, file_name=None):
+    def create_download_link_from_html(html_content, file_name):
         """
-        Create a download link for a file that works reliably across browsers
+        Create a download link for HTML content
         
         Args:
-            file_path: Path to the file to download
-            file_name: Optional custom file name for download
+            html_content: HTML content as a string
+            file_name: File name for download
             
         Returns:
             Download link markup
         """
-        if file_name is None:
-            file_name = os.path.basename(file_path)
-            
-        with open(file_path, "rb") as f:
-            data = f.read()
-        
-        b64 = base64.b64encode(data).decode()
+        b64 = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
         
         # Create standard download link
-        href = f'data:application/pdf;base64,{b64}'
-        download_link = f'<a href="{href}" download="{file_name}" target="_blank"><button style="background-color: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Download Quote PDF</button></a>'
+        href = f'data:text/html;charset=utf-8;base64,{b64}'
+        download_link = f'<a href="{href}" download="{file_name}" target="_blank"><button style="background-color: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Download Quote as HTML</button></a>'
         
         download_html = f"""
             <div style="text-align: center; margin: 20px 0;">
@@ -205,31 +196,39 @@ class UIComponents:
         with st.expander("View Terms & Conditions"):
             st.markdown(formatted_quote['terms']['text'])
         
-        # Add a button to save the quote as PDF
+        # Add a button to save the quote as HTML
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Store the quote info in session state for PDF generation
-        # This ensures it's always available after button clicks
+        # Store the quote info in session state for HTML generation
         if 'current_quote' not in st.session_state:
             st.session_state.current_quote = quote_info
         
-        # Also save the formatted_quote for display after PDF generation
-        st.session_state.current_formatted_quote = quote_info
-        
-        if st.button("Generate PDF Quote"):
-            with st.spinner("Generating PDF..."):
+        if st.button("Generate Quote Document"):
+            with st.spinner("Generating document..."):
                 try:
-                    pdf_generator = PDFGenerator(st.session_state.current_quote)
-                    pdf_path = pdf_generator.generate_pdf()
-                    if pdf_path:
+                    # Import the HTML generator
+                    from src.html_pdf_generator import PDFGenerator
+                    
+                    # Create generator
+                    generator = PDFGenerator(st.session_state.current_quote)
+                    
+                    # Get HTML content
+                    html_content = generator.get_html_string()
+                    
+                    if html_content:
+                        # Create a download link
                         quote_number = formatted_quote['title'].split('#')[-1].strip() if '#' in formatted_quote['title'] else 'quote'
-                        file_name = f"Forklift_Rental_Quote_{quote_number}.pdf"
-                        download_html = UIComponents.create_download_link(pdf_path, file_name)
+                        file_name = f"Forklift_Rental_Quote_{quote_number}.html"
+                        
+                        download_html = UIComponents.create_download_link_from_html(html_content, file_name)
                         st.markdown(download_html, unsafe_allow_html=True)
+                        
+                        # Add a note about how to convert to PDF
+                        st.info("After downloading the HTML file, you can open it in any web browser and use the browser's print function to save it as a PDF.")
                     else:
-                        st.error("Failed to generate PDF. Please try again.")
+                        st.error("Failed to generate document. Please try again.")
                 except Exception as e:
-                    st.error(f"Error generating PDF: {str(e)}")
+                    st.error(f"Error generating document: {str(e)}")
     
     @staticmethod
     def display_restart_button():
