@@ -2,46 +2,6 @@
 
 A Python-based web application that processes natural language forklift rental requests, asks qualifying questions, matches requirements to suitable forklift models, and generates detailed quotes.
 
-## Features
-
-- **Natural Language Processing**: Understand and process rental requests in natural language
-- **Conversational Interface**: Ask relevant qualifying questions to gather necessary information
-- **Smart Matching**: Match customer requirements to the appropriate forklift model
-- **Quote Generation**: Create detailed quotes with specifications, rates, and availability
-- **Brochure Integration**: Provide detailed information from forklift brochures
-- **User-Friendly Web Interface**: Built with Streamlit for an intuitive user experience
-- **No External API Keys Required**: Fully self-contained application
-
-## Project Structure
-
-```
-forklift_rental_agent/
-├── app.py                 # Main Streamlit application
-├── run_tests.py           # Test runner script
-├── requirements.txt       # Project dependencies
-├── Dockerfile             # Docker configuration
-├── docker-compose.yml     # Docker Compose configuration
-├── run_app.sh             # Shell script to run app in venv (Unix)
-├── run_app.bat            # Batch script to run app in venv (Windows)
-├── .gitignore             # Git ignore file
-├── data/                  # Data files
-│   ├── Schedule of Rates Example - Sheet1.csv
-│   ├── Bobcat D35-40-45-50-55-S+SC-5.pdf
-│   └── Bobcat D60-70-80-90S-5 Brochure.pdf
-├── src/                   # Source code
-│   ├── __init__.py        # Package marker
-│   ├── data_loader.py     # Functions to load and process data
-│   ├── matcher.py         # Logic to match requirements to forklifts
-│   ├── conversation.py    # Conversation flow and qualifying questions
-│   ├── quote.py           # Quote generation logic
-│   └── ui_components.py   # Reusable UI components
-└── tests/                 # Unit tests
-    ├── __init__.py        # Package marker 
-    ├── test_data_loader.py
-    ├── test_matcher.py
-    ├── test_conversation.py
-    └── test_quote.py
-```
 
 ## Requirements
 
@@ -103,7 +63,7 @@ git clone https://github.com/yourusername/forklift-rental-agent.git
 cd forklift-rental-agent
 
 # Build and run with Docker Compose
-docker-compose up
+docker-compose up --build
 ```
 
 The application will be available at http://localhost:8501
@@ -161,24 +121,3 @@ cd forklift-rental-agent
 # Using Docker
 docker-compose up -d
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
-
-## Future Enhancements
-
-- Integration with inventory management systems
-- Email functionality to send quotes to customers
-- Calendar integration for scheduling rentals
-- PDF generation for quotes
-- More advanced natural language processing
-- Integration with payment gateways
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
